@@ -13,11 +13,7 @@ NOXP uses only the standard library
 - [ ] Add dynamic routing
 - [ ] Publish to crates.io
 - [ ] Teach how to install noxp
-<<<<<<< HEAD
-- [ ] Almoçar
-=======
-- [ ] 
->>>>>>> 45e21d0793d3e24b44af39103f68993bde485057
+- [x] Almoçar
 
 #### Usage
 ```rust
@@ -45,7 +41,3 @@ fn main() -> std::io::Result<()> {
   server.listen_and_serve(8080);
 }
 ```
-<<<<<<< HEAD
-
-=======
->>>>>>> 45e21d0793d3e24b44af39103f68993bde485057
