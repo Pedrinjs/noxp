@@ -5,7 +5,7 @@
 NOXP uses only the standard library
 
 #### 🚧 What's next:
-- [ ] Make the user choose if the server single or multithreaded
+- [x] Make the user choose if the server single or multithreaded
 - [ ] Use the Request struct for some usefull purpose
 - [ ] Use a better routing system
 - [ ] Add middleware and other status codes
@@ -13,7 +13,6 @@ NOXP uses only the standard library
 - [ ] Add dynamic routing
 - [ ] Publish to crates.io
 - [ ] Teach how to install noxp
-- [x] Almoçar
 
 #### Usage
 ```rust
