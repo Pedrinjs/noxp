@@ -1,25 +1,25 @@
 use std::collections::HashMap;
 use std::io::{prelude::*, BufReader};
 use std::net::TcpStream;
-use std::str::FromStr;
 
 use super::http::{Method, Response, Request};
 
 pub type HandlerFunc = fn(Response, Request);
 
 pub struct Router {
-    routes: HashMap<String, HandlerFunc>
+    //routes: HashMap<String, HandlerFunc>
+    routes: HashMap<(Method, String), HandlerFunc>
 }
 
 impl Router {
-    pub fn new() -> Router {
-        Router {
+    pub fn new() -> Self {
+        Self {
             routes: HashMap::new(),
         }
     }
 
-    pub fn handle(&mut self, path: &str, handler: HandlerFunc) {
-        self.routes.insert(path.to_string(), handler);
+    pub fn handle(&mut self, key: (Method, String), value: HandlerFunc) {
+        self.routes.insert(key, value);
     }
 
     pub fn route(&self, mut stream: TcpStream) {
@@ -40,13 +40,10 @@ impl Router {
             _ => panic!("how did we get here?"),
         };
 
-        let request = Request {
-            method: Method::from_str(method).unwrap(),
-            path,
-        };
+        let request = Request::new(path, method);
         let response = Response::new(stream);
 
-        let key = format!("{:?} {}", request.method(), request.path());
+        let key = (request.method(), request.path().to_string());
 
         if self.routes.contains_key(&key) {
             let handler = self.routes.get(&key).unwrap();

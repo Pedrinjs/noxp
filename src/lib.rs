@@ -2,6 +2,7 @@ pub mod http;
 pub mod thread;
 mod route;
 
+use crate::http::Method;
 use crate::thread::ThreadPool;
 use crate::route::{HandlerFunc, Router};
 
@@ -14,15 +15,22 @@ pub struct Server {
 }
 
 impl Server {
-    pub fn new(pool: Option<ThreadPool>) -> Server {
+    pub fn default() -> Server {
         Server {
             router: Router::new(),
-            pool,
+            pool: None,
         }
     }
 
-    pub fn handle_func(&mut self, path: &str, handler: HandlerFunc) {
-        self.router.handle(path, handler)
+    pub fn set_pool(mut self, pool: ThreadPool) -> Server {
+        self.pool = Some(pool);
+        self
+    }
+
+    pub fn handle_func(&mut self, mp: (Method, &str), handler: HandlerFunc) {
+        let method = mp.0;
+        let path = mp.1.to_string();
+        self.router.handle((method, path), handler)
     }
 
     pub fn listen_and_serve(self, port: u16) -> Result<(), std::io::Error> {

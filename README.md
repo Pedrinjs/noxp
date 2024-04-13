@@ -16,27 +16,29 @@ NOXP uses only the standard library
 
 #### Usage
 ```rust
-use noxp::http::{Request, Response, StatusCode};
+use noxp::http::{Method, Request, Response, StatusCode};
 use noxp::thread::ThreadPool;
 use noxp::Server;
 
 fn main() -> std::io::Result<()> {
   let pool = ThreadPool::new(4); // threadpool with a finite number of threads (4)
-  let mut server = Server::new(Some(pool)); // create the server with the threadpool
+  let mut server = Server::default().set_pool(pool); // create the server with the threadpool
 
   // we are not using the request for now
   // the function is similar to golang's net/http
-  server.handle_func("GET /", |mut res: Response, _req: Request| {
-    res.write_string(StatusCode::OK, "Hello, World!");
-  });
+  server.handle_func((Method::GET, "/"), index);
 
   // you can also send html (only in the views folder)
-  server.handle_func("GET /hello", |mut res: Response, _req: Request| {
+  server.handle_func((Method::GET, "/hello"), |mut res: Response, _req: Request| {
     res.write_file(StatusCode::OK, "hello.html");
   });
 
   // it will listen at the the local addres 127.0.0.1:8080
   // for incoming TCP streams
-  server.listen_and_serve(8080);
+  server.listen_and_serve(8080)
+}
+
+fn index(mut res: Response, _req: Request) {
+    res.write_string(StatusCode::OK, "Hello, World!");
 }
 ```
