@@ -22,7 +22,7 @@ use noxp::thread::ThreadPool;
 
 fn main() -> std::io::Result<()> {
   let pool = ThreadPool::new(4); // threadpool with a finite number of threads (4)
-  let mut server = Server::new(pool); // create the server with the threadpool
+  let mut server = Server::new(Some(pool)); // create the server with the threadpool
 
   // we are not using the request for now
   // the function is similar to golang's net/http
