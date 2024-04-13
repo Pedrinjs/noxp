@@ -17,8 +17,8 @@ NOXP uses only the standard library
 #### Usage
 ```rust
 use noxp::http::{Request, Response, StatusCode};
-use noxp::server::Server;
 use noxp::thread::ThreadPool;
+use noxp::Server;
 
 fn main() -> std::io::Result<()> {
   let pool = ThreadPool::new(4); // threadpool with a finite number of threads (4)
