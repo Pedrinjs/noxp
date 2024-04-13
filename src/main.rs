@@ -1,13 +1,13 @@
 use noxp::http::{Request, Response, StatusCode};
-use noxp::server::Server;
 use noxp::thread::ThreadPool;
+use noxp::Server;
 
 use std::thread;
 use std::time::Duration;
 
 fn main() -> std::io::Result<()> {
     let pool = ThreadPool::new(4);
-    let mut server = Server::new(pool);
+    let mut server = Server::new(Some(pool));
 
     server.handle_func("GET /", |mut res: Response, _req: Request| {
         res.write_string(StatusCode::OK, "Hello, World!");
