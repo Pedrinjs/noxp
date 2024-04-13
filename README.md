@@ -12,6 +12,8 @@ NOXP uses only the standard library
 - [ ] Use query strings
 - [ ] Add dynamic routing
 - [ ] Publish to crates.io
+- [ ] Teach how to install noxp
+- [ ] 
 
 #### Usage
 ```rust
@@ -39,6 +41,3 @@ fn main() -> std::io::Result<()> {
   server.listen_and_serve(8080);
 }
 ```
-
-#### Installation
-TODO
