@@ -18,8 +18,8 @@ impl Router {
         }
     }
 
-    pub fn handle(&mut self, key: (Method, String), value: HandlerFunc) {
-        self.routes.insert(key, value);
+    pub fn handle(&mut self, key: (Method, &str), value: HandlerFunc) {
+        self.routes.insert((key.0, key.1.to_string()), value);
     }
 
     pub fn route(&self, mut stream: TcpStream) {
@@ -36,14 +36,14 @@ impl Router {
         let line_slice = line.split(" ").collect::<Vec<&str>>();
 
         let (method, path) = match line_slice.as_slice() {
-            [m, p, _] => (m, p),
+            [method, path, _] => (Method::from_str(method), path),
             _ => panic!("how did we get here?"),
         };
 
-        let request = Request::new(path, method);
+        let request = Request::new(method, path);
         let response = Response::new(stream);
 
-        let key = (request.method(), request.path().to_string());
+        let key = (request.method(), request.path());
 
         if self.routes.contains_key(&key) {
             let handler = self.routes.get(&key).unwrap();

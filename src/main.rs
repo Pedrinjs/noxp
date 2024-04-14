@@ -4,7 +4,7 @@ use noxp::Server;
 
 fn main() -> std::io::Result<()> {
     let pool = ThreadPool::new(4);
-    let mut server = Server::default().set_pool(pool);
+    let mut server = Server::default().set_pool(pool).build();
 
     server.handle_func((Method::GET, "/"), index);
 

@@ -1,24 +1,18 @@
-use std::str::FromStr;
-
 #[derive(Clone, Eq, Hash, PartialEq)]
 pub enum Method {
     GET,
     POST,
 }
 
-impl FromStr for Method {
-    type Err = String;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
+impl Method {
+    pub fn from_str(s: &str) -> Self {
         match s {
-            "GET" => Ok(Self::GET),
-            "POST" => Ok(Self::POST),
-            _ => Err("onlt GET/POST available".to_string()),
+            "GET" => Self::GET,
+            "POST" => Self::POST,
+            _ => panic!("onlt GET/POST available"),
         }
     }
-}
 
-impl Method {
     pub fn to_str(&self) -> &str {
         match self {
             Method::GET => "GET",

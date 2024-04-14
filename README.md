@@ -7,8 +7,10 @@ NOXP uses only the standard library
 #### 🚧 What's next:
 - [x] Make the user choose if the server single or multithreaded
 - [ ] Use the Request struct for some usefull purpose
-- [ ] Use a better routing system
-- [ ] Add middleware and other status codes
+- [x] Use a better routing system
+- [ ] Add middleware
+- [ ] More status codes
+- [ ] More http methods
 - [ ] Use query strings
 - [ ] Add dynamic routing
 - [ ] Publish to crates.io
@@ -22,9 +24,9 @@ use noxp::Server;
 
 fn main() -> std::io::Result<()> {
   let pool = ThreadPool::new(4); // threadpool with a finite number of threads (4)
-  let mut server = Server::default().set_pool(pool); // create the server with the threadpool
+  let mut server = Server::default().set_pool(pool).build(); // create the server with the threadpool
 
-  // we are not using the request for now
+  // pay attention for the tuple (Method, &str)
   // the function is similar to golang's net/http
   server.handle_func((Method::GET, "/"), index);
 

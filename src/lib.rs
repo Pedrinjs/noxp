@@ -15,22 +15,34 @@ pub struct Server {
 }
 
 impl Server {
-    pub fn default() -> Server {
-        Server {
+    pub fn default() -> Self {
+        Self {
             router: Router::new(),
             pool: None,
         }
     }
 
-    pub fn set_pool(mut self, pool: ThreadPool) -> Server {
+    pub fn set_pool(mut self, pool: ThreadPool) -> Self {
         self.pool = Some(pool);
         self
     }
 
-    pub fn handle_func(&mut self, mp: (Method, &str), handler: HandlerFunc) {
-        let method = mp.0;
-        let path = mp.1.to_string();
-        self.router.handle((method, path), handler)
+    pub fn build(self) -> RealServer {
+        RealServer {
+            router: self.router,
+            pool: self.pool,
+        }
+    }
+}
+
+pub struct RealServer {
+    router: Router,
+    pool: Option<ThreadPool>,
+}
+
+impl RealServer {
+    pub fn handle_func(&mut self, key: (Method, &str), handler: HandlerFunc) {
+        self.router.handle(key, handler)
     }
 
     pub fn listen_and_serve(self, port: u16) -> Result<(), std::io::Error> {

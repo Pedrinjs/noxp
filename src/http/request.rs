@@ -1,29 +1,23 @@
 use super::method::Method;
 //use super::query_string::QueryString;
 
-use std::str::FromStr;
-use std::str;
-
 pub struct Request<'a> {
+    method: Method,
     path: &'a str,
     //query_string: Option<QueryString>,
-    method: Method,
 }
 
-impl<'a> Request<'a> {
-    pub fn new(path: &'a str, method: &'a str) -> Request<'a> {
-        Request {
-            method: Method::from_str(method).unwrap(),
-            path,
-        }
+impl Request<'_> {
+    pub fn new(method: Method, path: &str) -> Request {
+        Request { method, path }
     }
 
     pub fn method(&self) -> Method {
         self.method.clone()
     }
 
-    pub fn path(&self) -> &str {
-        &self.path
+    pub fn path(&self) -> String {
+        self.path.to_string()
     }
 
     /*pub fn query_string(&self) -> Option<&QueryString> {
