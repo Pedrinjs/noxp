@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 use std::io::{prelude::*, BufReader};
 use std::net::TcpStream;
 
@@ -8,13 +8,13 @@ pub type HandlerFunc = fn(Response, Request);
 
 pub struct Router {
     //routes: HashMap<String, HandlerFunc>
-    routes: HashMap<(Method, String), HandlerFunc>
+    routes: BTreeMap<(Method, String), HandlerFunc>
 }
 
 impl Router {
     pub fn new() -> Self {
         Self {
-            routes: HashMap::new(),
+            routes: BTreeMap::new(),
         }
     }
 

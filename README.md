@@ -21,6 +21,11 @@ use noxp::http::{Method, Request, Response, StatusCode};
 use noxp::thread::ThreadPool;
 use noxp::Server;
 
+struct Person {
+  name: String,
+  age: i32,
+}
+
 fn main() -> std::io::Result<()> {
   let pool = ThreadPool::new(4); // threadpool with a finite number of threads (4)
   let mut server = Server::default().set_pool(pool).build(); // create the server with the threadpool
@@ -32,6 +37,16 @@ fn main() -> std::io::Result<()> {
   // you can also send html (only in the views folder)
   server.handle_func((Method::GET, "/hello"), |mut res: Response, _req: Request| {
     res.write_file(StatusCode::OK, "hello.html");
+  });
+
+  server.handle_func((Method::GET, "/person"), |mut res: Response, _req: Request| {
+    let person = Person {
+      name: String::from("John Doe"),
+      age: 99,
+    };
+
+    // you can send json, but works only for structs that derive Debug
+    res.write_json(StatusCode::OK, person);
   });
 
   // it will listen at the the local addres 127.0.0.1:8080

@@ -1,4 +1,4 @@
-#[derive(Clone, Eq, Hash, PartialEq)]
+#[derive(Clone, Eq, Hash, PartialEq, PartialOrd, Ord)]
 pub enum Method {
     GET,
     POST,
