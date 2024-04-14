@@ -21,6 +21,7 @@ use noxp::http::{Method, Request, Response, StatusCode};
 use noxp::thread::ThreadPool;
 use noxp::Server;
 
+#[derive(Debug)]
 struct Person {
   name: String,
   age: i32,
