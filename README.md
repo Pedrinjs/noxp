@@ -12,7 +12,6 @@ NOXP uses only the standard library
 - [ ] More status codes
 - [ ] More http methods
 - [ ] Use query strings
-- [ ] Add dynamic routing
 - [ ] Publish to crates.io
 - [ ] Teach how to install noxp
 
