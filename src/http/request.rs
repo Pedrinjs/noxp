@@ -1,10 +1,9 @@
 use super::method::Method;
-//use super::query_string::QueryString;
 
+#[derive(Clone)]
 pub struct Request<'a> {
     method: Method,
     path: &'a str,
-    //query_string: Option<QueryString>,
 }
 
 impl Request<'_> {
@@ -19,8 +18,4 @@ impl Request<'_> {
     pub fn path(&self) -> String {
         self.path.to_string()
     }
-
-    /*pub fn query_string(&self) -> Option<&QueryString> {
-        self.query_string.as_ref()
-    }*/
 }

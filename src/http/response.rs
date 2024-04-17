@@ -5,64 +5,87 @@ use std::net::TcpStream;
 
 use super::status_code::StatusCode;
 
+pub trait JSON {
+    fn to_string(&self) -> String
+    where Self: Debug {
+        let temp = format!("{:?}", self);
+        let mut parts = temp.as_str().split(' ');
+        if let Some("{") = parts.next() {
+            panic!("You should use only structs!");
+        }
+
+        let contents: String = parts.collect();
+        return contents;
+    }
+}
+
+pub struct ResponseWriter {
+    status: StatusCode,
+    body: String,
+    kind: String,
+}
+
+impl Default for ResponseWriter {
+    fn default() -> Self {
+        Self {
+            status: StatusCode::NotFound,
+            body: "".to_string(),
+            kind: "".to_string(),
+        }
+    }
+}
+
+impl ResponseWriter {
+    pub fn set_status(mut self, status: StatusCode) -> Self {
+        self.status = status;
+        self
+    }
+
+    pub fn set_text(mut self, body: impl Into<String>) -> Self {
+        self.body = body.into();
+        self.kind = "text/plain".to_string();
+        self
+    }
+
+    pub fn set_html(mut self, path: impl Into<String>) -> Self {
+        let path = format!("views/{}", path.into());
+        self.body = fs::read_to_string(path).unwrap();
+        self.kind = "text/html".to_string();
+        self
+    }
+
+    pub fn set_json<S: JSON + Debug>(mut self, body: S) -> Self {
+        self.body = body.to_string();
+        self.kind = "application/json".to_string();
+        self
+    }
+
+    pub fn build(self) -> Response {
+        Response::new(self.status, self.body, self.kind)
+    }
+}
+
 pub struct Response {
-    stream: TcpStream,
+    status: StatusCode,
+    body: String,
+    kind: String,
 }
 
 impl Response {
-    pub fn new(stream: TcpStream) -> Response {
-        Response { stream }
+    pub fn new(status: StatusCode, body: String, kind: String) -> Self {
+        Self { status, body, kind }
     }
 
-    pub fn write_string(&mut self, status: StatusCode, contents: &str) {
-        let kind = "text/plain";
-
+    pub fn write(&self, mut stream: TcpStream) {
         let response = format!(
             "HTTP/1.1 {}\r\nContent-Length: {}\r\nContent-Type: {}\r\n\r\n{}",
-            status.get_status(),
-            contents.len(),
-            kind,
-            contents,
+            self.status.get_status(),
+            self.body.len(),
+            self.kind,
+            self.body,
         );
-
-        self.stream.write_all(response.as_bytes()).unwrap();
-        self.stream.flush().unwrap();
-    }
-
-    pub fn write_file(&mut self, status: StatusCode, path: &str) {
-        let path = format!("views/{path}");
-        let contents = fs::read_to_string(path).unwrap();
-        let kind = "text/html";
         
-        let response = format!(
-            "HTTP/1.1 {}\r\nContent-Length: {}\r\nContent-Type: {}\r\n\r\n{}",
-            status.get_status(),
-            contents.len(),
-            kind,
-            contents,
-        );
-
-        self.stream.write_all(response.as_bytes()).unwrap();
-        self.stream.flush().unwrap();
-    }
-
-    pub fn write_json<T: Debug>(&mut self, status: StatusCode, json: T) {
-        let temp = format!("{:?}", json);
-        let mut parts = temp.as_str().split(' ');
-        parts.next();
-
-        let contents = parts.collect::<String>();
-        let kind = "application/json";
-        
-        let response = format!(
-            "HTTP/1.1 {}\r\nContent-Length: {}\r\nContent-Type: {}\r\n\r\n{}",
-            status.get_status(),
-            contents.len(),
-            kind,
-            contents,
-        );
-
-        self.stream.write_all(response.as_bytes()).unwrap();
-        self.stream.flush().unwrap();
+        stream.write_all(response.as_bytes()).unwrap();
+        stream.flush().unwrap();
     }
 }

@@ -17,7 +17,14 @@ NOXP uses only the standard library
 
 #### Usage
 ```rust
-use noxp::http::{Method, Request, Response, StatusCode};
+use std::net::TcpStream;
+
+use noxp::http::{
+  Method,
+  Request,
+  response::{JSON, ResponseWriter},
+  StatusCode
+};
 use noxp::thread::ThreadPool;
 use noxp::Server;
 
@@ -27,35 +34,51 @@ struct Person {
   age: i32,
 }
 
+impl JSON for Person {}
+
 fn main() -> std::io::Result<()> {
-  let pool = ThreadPool::new(4); // threadpool with a finite number of threads (4)
-  let mut server = Server::default().set_pool(pool).build(); // create the server with the threadpool
+  // threadpool with a finite number of threads(4)
+  let pool = ThreadPool::new(4);
+  
+  // create the server with the threadpool (it's optional)
+  let mut server = Server::default().set_pool(pool).build();
 
   // pay attention for the tuple (Method, &str)
-  // the function is similar to golang's net/http
   server.handle_func((Method::GET, "/"), index);
 
   // you can also send html (only in the views folder)
-  server.handle_func((Method::GET, "/hello"), |mut res: Response, _req: Request| {
-    res.write_file(StatusCode::OK, "hello.html");
-  });
+  server.handle_func((Method::GET, "/hello"), file);
 
-  server.handle_func((Method::GET, "/person"), |mut res: Response, _req: Request| {
-    let person = Person {
-      name: String::from("John Doe"),
-      age: 99,
-    };
+  // and send json (only structs which implement JSON and Debug)
+  server.handle_func((Method::GET, "/person"), json);
 
-    // you can send json, but works only for structs that derive Debug
-    res.write_json(StatusCode::OK, person);
-  });
-
-  // it will listen at the the local addres 127.0.0.1:8080
-  // for incoming TCP streams
+  // listening at localhost:8080
   server.listen_and_serve(8080)
 }
 
-fn index(mut res: Response, _req: Request) {
-    res.write_string(StatusCode::OK, "Hello, World!");
+fn index(res: ResponseWriter, _req: Request, stream: TcpStream) {
+  res.set_status(StatusCode::OK)
+    .set_text("Hello, World!")
+    .build()
+    .write(stream);
+}
+
+fn file(res: ResponseWriter, _req: Request, stream: TcpStream) {
+  res.set_status(StatusCode::OK)
+    .set_html("hello.html")
+    .build()
+    .write(stream);
+}
+
+fn json(res: ResponseWriter, _req: Request, stream: TcpStream) {
+  let person = Person {
+    name: String::from("Menezes"),
+    age: 15,
+  };
+
+  res.set_status(StatusCode::OK)
+    .set_json(person)
+    .build()
+    .write(stream);
 }
 ```

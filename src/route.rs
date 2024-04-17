@@ -2,25 +2,34 @@ use std::collections::BTreeMap;
 use std::io::{prelude::*, BufReader};
 use std::net::TcpStream;
 
-use super::http::{Method, Response, Request};
+use super::http::{
+    Method,
+    response::ResponseWriter,
+    Request
+};
 
-pub type HandlerFunc = fn(Response, Request);
+pub type HandlerFunc = fn(ResponseWriter, Request, TcpStream);
 
 pub struct Router {
-    //routes: HashMap<String, HandlerFunc>
-    routes: BTreeMap<(Method, String), HandlerFunc>
+    routes: BTreeMap<(Method, String), HandlerFunc>,
+    //middlewares: BTreeSet<HandlerFunc>,
 }
 
 impl Router {
     pub fn new() -> Self {
         Self {
             routes: BTreeMap::new(),
+            //middlewares: BTreeSet::new(),
         }
     }
 
     pub fn handle(&mut self, key: (Method, &str), value: HandlerFunc) {
         self.routes.insert((key.0, key.1.to_string()), value);
     }
+
+    /*pub fn r#use(&mut self, handler: HandlerFunc) {
+        self.middlewares.insert(handler);
+    }*/
 
     pub fn route(&self, mut stream: TcpStream) {
         let buf_reader = BufReader::new(&mut stream);
@@ -41,13 +50,17 @@ impl Router {
         };
 
         let request = Request::new(method, path);
-        let response = Response::new(stream);
+        let response = ResponseWriter::default();
 
         let key = (request.method(), request.path());
 
         if self.routes.contains_key(&key) {
+            /*for mid in &self.middlewares {
+                mid(response.clone(), request.clone());
+            }*/
+            
             let handler = self.routes.get(&key).unwrap();
-            handler(response, request);
+            handler(response, request, stream);
         }
     }
 }

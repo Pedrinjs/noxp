@@ -1,4 +1,11 @@
-use noxp::http::{Method, Request, Response, StatusCode};
+use std::net::TcpStream;
+
+use noxp::http::{
+    Method,
+    Request,
+    response::{JSON, ResponseWriter},
+    StatusCode
+};
 use noxp::thread::ThreadPool;
 use noxp::Server;
 
@@ -8,37 +15,41 @@ struct Person {
     age: i32,
 }
 
-impl Person {
-    fn new(name: &str, age: i32) -> Self {
-        Self {
-            name: name.to_string(),
-            age,
-        }
-    }
-}
+impl JSON for Person {}
 
 fn main() -> std::io::Result<()> {
     let pool = ThreadPool::new(4);
     let mut server = Server::default().set_pool(pool).build();
 
     server.handle_func((Method::GET, "/"), index);
-
     server.handle_func((Method::GET, "/file"), file);
-
     server.handle_func((Method::GET, "/json"), json);
 
     server.listen_and_serve(6969)
 }
 
-fn index(mut res: Response, _req: Request) {
-    res.write_string(StatusCode::OK, "Hello, World!");
+fn index(res: ResponseWriter, _req: Request, stream: TcpStream) {
+    res.set_status(StatusCode::OK)
+        .set_text("Hello, World!")
+        .build()
+        .write(stream);
 }
 
-fn file(mut res: Response, _req: Request) {
-    res.write_file(StatusCode::OK, "hello.html");
+fn file(res: ResponseWriter, _req: Request, stream: TcpStream) {
+    res.set_status(StatusCode::OK)
+        .set_html("hello.html")
+        .build()
+        .write(stream);
 }
 
-fn json(mut res: Response, _req: Request) {
-    let person = Person::new("Menezes", 15);
-    res.write_json(StatusCode::OK, person);
+fn json(res: ResponseWriter, _req: Request, stream: TcpStream) {
+    let person = Person {
+        name: String::from("Menezes"),
+        age: 15,
+    };
+
+    res.set_status(StatusCode::OK)
+        .set_json(person)
+        .build()
+        .write(stream);
 }

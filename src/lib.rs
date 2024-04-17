@@ -45,6 +45,10 @@ impl RealServer {
         self.router.handle(key, handler)
     }
 
+    /*pub fn r#use(&mut self, handler: HandlerFunc) {
+        self.router.r#use(handler);
+    }*/
+
     pub fn listen_and_serve(self, port: u16) -> Result<(), std::io::Error> {
         // localhost:port (e.g. localhost:8080, localhost:6969)
         let ip = SocketAddr::from(([127, 0, 0, 1], port));
