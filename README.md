@@ -20,14 +20,13 @@ NOXP uses only the standard library
 use std::fmt;
 use std::net::TcpStream;
 
+use noxp::Server;
 use noxp::http::{
   Method,
   Request,
   response::ResponseWriter,
   StatusCode
 };
-use noxp::thread::ThreadPool;
-use noxp::Server;
 
 struct Person {
   name: String,
@@ -41,11 +40,11 @@ impl fmt::Display for Person {
 }
 
 fn main() -> std::io::Result<()> {
-  // threadpool with a finite number of threads(4)
-  let pool = ThreadPool::new(4);
-  
-  // create the server with the threadpool (it's optional)
-  let mut server = Server::default().set_pool(pool).build();
+  // define the size of the thread pool
+  let size: usize = 4;
+  // create the server with a thread pool of defined size 4 (it's optional)
+  // it's also possible to use Server::default().set_pool(4).build()
+  let mut server = Server::default().set_pool(size).build();
 
   // pay attention for the tuple (Method, &str)
   server.handle_func((Method::GET, "/"), index);

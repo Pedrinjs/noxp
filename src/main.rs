@@ -7,7 +7,6 @@ use noxp::http::{
     response::ResponseWriter,
     StatusCode
 };
-use noxp::thread::ThreadPool;
 use noxp::Server;
 
 struct Person {
@@ -22,8 +21,7 @@ impl fmt::Display for Person {
 }
 
 fn main() -> std::io::Result<()> {
-    let pool = ThreadPool::new(4);
-    let mut server = Server::default().set_pool(pool).build();
+    let mut server = Server::default().set_pool(4).build();
 
     server.handle_func((Method::GET, "/"), index);
     server.handle_func((Method::GET, "/file"), file);

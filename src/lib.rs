@@ -22,7 +22,8 @@ impl Server {
         }
     }
 
-    pub fn set_pool(mut self, pool: ThreadPool) -> Self {
+    pub fn set_pool(mut self, size: usize) -> Self {
+        let pool = ThreadPool::new(size);
         self.pool = Some(pool);
         self
     }
