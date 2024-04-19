@@ -17,24 +17,28 @@ NOXP uses only the standard library
 
 #### Usage
 ```rust
+use std::fmt;
 use std::net::TcpStream;
 
 use noxp::http::{
   Method,
   Request,
-  response::{JSON, ResponseWriter},
+  response::ResponseWriter,
   StatusCode
 };
 use noxp::thread::ThreadPool;
 use noxp::Server;
 
-#[derive(Debug)]
 struct Person {
   name: String,
   age: i32,
 }
 
-impl JSON for Person {}
+impl fmt::Display for Person {
+  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    write!(f, "{{ \"name\": \"{}\", \"age\": {} }}", self.name, self.age)
+  }
+}
 
 fn main() -> std::io::Result<()> {
   // threadpool with a finite number of threads(4)
@@ -49,7 +53,7 @@ fn main() -> std::io::Result<()> {
   // you can also send html (only in the views folder)
   server.handle_func((Method::GET, "/hello"), file);
 
-  // and send json (only structs which implement JSON and Debug)
+  // and send json (only structs which implement Display)
   server.handle_func((Method::GET, "/person"), json);
 
   // listening at localhost:8080

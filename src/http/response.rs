@@ -1,23 +1,9 @@
 use std::fs;
-use std::fmt::Debug;
+use std::fmt::Display;
 use std::io::Write;
 use std::net::TcpStream;
 
 use super::status_code::StatusCode;
-
-pub trait JSON {
-    fn to_string(&self) -> String
-    where Self: Debug {
-        let temp = format!("{:?}", self);
-        let mut parts = temp.as_str().split(' ');
-        if let Some("{") = parts.next() {
-            panic!("You should use only structs!");
-        }
-
-        let contents: String = parts.collect();
-        return contents;
-    }
-}
 
 pub struct ResponseWriter {
     status: StatusCode,
@@ -54,8 +40,8 @@ impl ResponseWriter {
         self
     }
 
-    pub fn set_json<S: JSON + Debug>(mut self, body: S) -> Self {
-        self.body = body.to_string();
+    pub fn set_json(mut self, body: impl Display) -> Self {
+        self.body = format!("{body}");
         self.kind = "application/json".to_string();
         self
     }

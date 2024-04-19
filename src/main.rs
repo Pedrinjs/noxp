@@ -1,21 +1,25 @@
+use std::fmt;
 use std::net::TcpStream;
 
 use noxp::http::{
     Method,
     Request,
-    response::{JSON, ResponseWriter},
+    response::ResponseWriter,
     StatusCode
 };
 use noxp::thread::ThreadPool;
 use noxp::Server;
 
-#[derive(Debug)]
 struct Person {
     name: String,
     age: i32,
 }
 
-impl JSON for Person {}
+impl fmt::Display for Person {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{{ \"name\": \"{}\", \"age\": {} }}", self.name, self.age)
+    }
+}
 
 fn main() -> std::io::Result<()> {
     let pool = ThreadPool::new(4);
@@ -25,7 +29,7 @@ fn main() -> std::io::Result<()> {
     server.handle_func((Method::GET, "/file"), file);
     server.handle_func((Method::GET, "/json"), json);
 
-    server.listen_and_serve(6969)
+    server.listen_and_serve("127.0.0.1:6969")
 }
 
 fn index(res: ResponseWriter, _req: Request, stream: TcpStream) {

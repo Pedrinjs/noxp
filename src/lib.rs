@@ -6,7 +6,7 @@ use crate::http::Method;
 use crate::thread::ThreadPool;
 use crate::route::{HandlerFunc, Router};
 
-use std::net::{SocketAddr, TcpListener};
+use std::net::{ToSocketAddrs, TcpListener};
 use std::sync::Arc;
 
 pub struct Server {
@@ -49,10 +49,10 @@ impl RealServer {
         self.router.r#use(handler);
     }*/
 
-    pub fn listen_and_serve(self, port: u16) -> Result<(), std::io::Error> {
-        // localhost:port (e.g. localhost:8080, localhost:6969)
-        let ip = SocketAddr::from(([127, 0, 0, 1], port));
-        let listener = TcpListener::bind(ip)?;
+    pub fn listen_and_serve<A>(self, addr: A) -> Result<(), std::io::Error>
+        where A: ToSocketAddrs
+    {
+        let listener = TcpListener::bind(addr)?;
 
         let router = Arc::new(self.router);
         for stream in listener.incoming() {
