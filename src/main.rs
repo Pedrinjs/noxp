@@ -24,6 +24,7 @@ fn main() -> std::io::Result<()> {
     let mut server = Server::default().set_pool(4).build();
 
     server.handle_func((Method::GET, "/"), index);
+    server.handle_func((Method::POST, "/"), post);
     server.handle_func((Method::GET, "/file"), file);
     server.handle_func((Method::GET, "/json"), json);
 
@@ -35,6 +36,10 @@ fn index(res: ResponseWriter, _req: Request, stream: TcpStream) {
         .set_text("Hello, World!")
         .build()
         .write(stream);
+}
+
+fn post(_res: ResponseWriter, req: Request, _stream: TcpStream) {
+    req.print_body();
 }
 
 fn file(res: ResponseWriter, _req: Request, stream: TcpStream) {

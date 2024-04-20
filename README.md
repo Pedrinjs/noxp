@@ -5,15 +5,15 @@
 NOXP uses only the standard library
 
 #### 🚧 What's next:
-- [x] Make the user choose if the server single or multithreaded
-- [ ] Use the Request struct for some usefull purpose
-- [x] Use a better routing system
+- [x] Optional multithreading
+- [x] Use the requests for some usefull purpose
+- [x] "Better" routing system
 - [ ] Add middleware
 - [ ] More status codes
 - [ ] More http methods
 - [ ] Use query strings
 - [ ] Publish to crates.io
-- [ ] Teach how to install noxp
+- [ ] Add documentation
 
 #### Usage
 ```rust
@@ -48,6 +48,7 @@ fn main() -> std::io::Result<()> {
 
   // pay attention for the tuple (Method, &str)
   server.handle_func((Method::GET, "/"), index);
+  server.handle_func((Method::POST, "/"), post);
 
   // you can also send html (only in the views folder)
   server.handle_func((Method::GET, "/hello"), file);
@@ -64,6 +65,10 @@ fn index(res: ResponseWriter, _req: Request, stream: TcpStream) {
     .set_text("Hello, World!")
     .build()
     .write(stream);
+}
+
+fn post(_res: ResponseWriter, req: Request, stream: TcpStream) {
+  req.print_body();
 }
 
 fn file(res: ResponseWriter, _req: Request, stream: TcpStream) {
