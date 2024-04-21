@@ -5,6 +5,7 @@ use std::net::TcpStream;
 
 use super::status_code::StatusCode;
 
+#[derive(Clone)]
 pub struct ResponseWriter {
     status: StatusCode,
     body: String,

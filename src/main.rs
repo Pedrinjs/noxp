@@ -3,9 +3,9 @@ use std::net::TcpStream;
 
 use noxp::http::{
     Method,
-    Request,
     response::ResponseWriter,
-    StatusCode
+    Request,
+    StatusCode,
 };
 use noxp::Server;
 
@@ -31,31 +31,34 @@ fn main() -> std::io::Result<()> {
     server.listen_and_serve("127.0.0.1:6969")
 }
 
-fn index(res: ResponseWriter, _req: Request, stream: TcpStream) {
-    res.set_status(StatusCode::OK)
+fn index(_req: Request, stream: TcpStream) {
+    ResponseWriter::default()
+        .set_status(StatusCode::OK)
         .set_text("Hello, World!")
         .build()
         .write(stream);
 }
 
-fn post(_res: ResponseWriter, req: Request, _stream: TcpStream) {
+fn post(req: Request, _stream: TcpStream) {
     req.print_body();
 }
 
-fn file(res: ResponseWriter, _req: Request, stream: TcpStream) {
-    res.set_status(StatusCode::OK)
+fn file(_req: Request, stream: TcpStream) {
+    ResponseWriter::default()
+        .set_status(StatusCode::OK)
         .set_html("hello.html")
         .build()
         .write(stream);
 }
 
-fn json(res: ResponseWriter, _req: Request, stream: TcpStream) {
+fn json(_req: Request, stream: TcpStream) {
     let person = Person {
         name: String::from("Menezes"),
         age: 15,
     };
 
-    res.set_status(StatusCode::OK)
+    ResponseWriter::default()
+        .set_status(StatusCode::OK)
         .set_json(person)
         .build()
         .write(stream);
