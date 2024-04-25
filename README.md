@@ -8,10 +8,11 @@ NOXP uses only the standard library
 - [x] Optional multithreading
 - [x] Use the requests for some usefull purpose
 - [x] "Better" routing system
-- [ ] Add middleware
-- [ ] More status codes
+- [x] More status codes
 - [ ] More http methods
 - [ ] Use query strings
+- [ ] Add middleware
+- [ ] Authentication
 - [ ] Publish to crates.io
 - [ ] Add documentation
 

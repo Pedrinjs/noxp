@@ -9,7 +9,7 @@ impl Method {
         match s {
             "GET" => Self::GET,
             "POST" => Self::POST,
-            _ => panic!("onlt GET/POST available"),
+            _ => todo!(),
         }
     }
 
