@@ -28,7 +28,7 @@ fn main() -> std::io::Result<()> {
     server.handle_func((Method::GET, "/file"), file);
     server.handle_func((Method::GET, "/json"), json);
 
-    server.listen_and_serve("127.0.0.1:6969")
+    server.listen_and_serve("127.0.0.1:8080")
 }
 
 fn index(_req: Request, stream: TcpStream) {

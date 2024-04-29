@@ -46,42 +46,28 @@ impl RealServer {
         self.router.handle(key, handler)
     }
 
-    /*pub fn r#use(&mut self, handler: HandlerFunc) {
-        self.router.r#use(handler);
-    }*/
-
     pub fn listen_and_serve<A>(self, addr: A) -> Result<(), std::io::Error>
         where A: ToSocketAddrs
     {
         let listener = TcpListener::bind(addr)?;
 
         let router = Arc::new(self.router);
-        for stream in listener.incoming() {
-            let stream = stream.unwrap();
 
-            /*if self.pool.is_none() {
-                let router = Arc::clone(&router);
-                router.route(stream);
-            } else {
-                let router = Arc::clone(&router);
-                self.pool.unwrap().execute(move || {
-                    router.route(stream)
-                });
-            }*/
-
+        while let Ok((socket, _)) = listener.accept() {
             match self.pool {
                 Some(ref pool) => {
                     let router = Arc::clone(&router);
                     pool.execute(move || {
-                        router.route(stream);
+                        router.route(socket);
                     });
                 },
                 None => {
                     let router = Arc::clone(&router);
-                    router.route(stream);
+                    router.route(socket);
                 },
             }
         }
+
         Ok(())
     }
 }
