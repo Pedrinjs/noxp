@@ -10,6 +10,7 @@ NOXP uses only the standard library
 - [x] "Better" routing system
 - [x] More status codes
 - [x] More http methods
+- [ ] Headers!
 - [ ] Use query strings
 - [ ] Add middleware
 - [ ] Authentication
