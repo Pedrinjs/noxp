@@ -2,7 +2,6 @@ use std::fmt;
 use std::net::TcpStream;
 
 use noxp::http::{
-    Method,
     response::ResponseWriter,
     Request,
     StatusCode,
@@ -23,10 +22,10 @@ impl fmt::Display for Person {
 fn main() -> std::io::Result<()> {
     let mut server = Server::default().set_pool(4).build();
 
-    server.handle_func((Method::GET, "/"), index);
-    server.handle_func((Method::POST, "/"), post);
-    server.handle_func((Method::GET, "/file"), file);
-    server.handle_func((Method::GET, "/json"), json);
+    server.handle_func(("GET", "/"), index);
+    server.handle_func(("POST", "/"), post);
+    server.handle_func(("GET", "/file"), file);
+    server.handle_func(("GET", "/json"), json);
 
     server.listen_and_serve("127.0.0.1:8080")
 }

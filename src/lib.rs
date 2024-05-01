@@ -2,7 +2,6 @@ pub mod http;
 pub mod thread;
 mod route;
 
-use crate::http::Method;
 use crate::thread::ThreadPool;
 use crate::route::{HandlerFunc, Router};
 
@@ -42,7 +41,7 @@ pub struct RealServer {
 }
 
 impl RealServer {
-    pub fn handle_func(&mut self, key: (Method, &str), handler: HandlerFunc) {
+    pub fn handle_func(&mut self, key: (&str, &str), handler: HandlerFunc) {
         self.router.handle(key, handler)
     }
 

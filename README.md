@@ -10,7 +10,7 @@ NOXP uses only the standard library
 - [x] "Better" routing system
 - [x] More status codes
 - [x] More http methods
-- [ ] Headers!
+- [x] Headers!
 - [ ] Use query strings
 - [ ] Add middleware
 - [ ] Authentication
@@ -24,7 +24,6 @@ use std::net::TcpStream;
 
 use noxp::Server;
 use noxp::http::{
-  Method,
   response::ResponseWriter,
   Request,
   StatusCode,
@@ -49,14 +48,14 @@ fn main() -> std::io::Result<()> {
   let mut server = Server::default().set_pool(size).build();
 
   // pay attention for the tuple (Method, &str)
-  server.handle_func((Method::GET, "/"), index);
-  server.handle_func((Method::POST, "/"), post);
+  server.handle_func(("GET", "/"), index);
+  server.handle_func(("POST", "/"), post);
 
   // you can also send html (only in the views folder)
-  server.handle_func((Method::GET, "/hello"), file);
+  server.handle_func(("GET", "/hello"), file);
 
   // and send json (only structs which implement Display)
-  server.handle_func((Method::GET, "/person"), json);
+  server.handle_func(("GET", "/person"), json);
 
   // listening at localhost:8080
   server.listen_and_serve(8080)

@@ -17,8 +17,10 @@ impl Router {
         }
     }
 
-    pub fn handle(&mut self, key: (Method, &str), value: HandlerFunc) {
-        self.routes.insert((key.0, key.1.to_string()), value);
+    pub fn handle(&mut self, key: (&str, &str), handler: HandlerFunc) {
+        let method = Method::from_str(key.0);
+        let path = key.1.to_string();
+        self.routes.insert((method, path), handler);
     }
 
     pub fn route(&self, mut stream: TcpStream) {
