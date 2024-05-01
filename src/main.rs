@@ -15,7 +15,7 @@ struct Person {
 
 impl fmt::Display for Person {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{{ \"name\": \"{}\", \"age\": {} }}", self.name, self.age)
+        write!(f, r#"{{"name": "{}", "age": {}}}"#, self.name, self.age)
     }
 }
 
@@ -38,8 +38,14 @@ fn index(_req: Request, stream: TcpStream) {
         .write(stream);
 }
 
-fn post(req: Request, _stream: TcpStream) {
+fn post(req: Request, stream: TcpStream) {
     req.print_body();
+
+    ResponseWriter::default()
+        .set_status(StatusCode::OK)
+        .set_json(req.body())
+        .build()
+        .write(stream);
 }
 
 fn file(_req: Request, stream: TcpStream) {
