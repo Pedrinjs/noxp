@@ -17,9 +17,10 @@ impl Router {
         }
     }
 
-    pub fn handle(&mut self, key: (&str, &str), handler: HandlerFunc) {
-        let method = Method::from_str(key.0);
+    pub fn handle(&mut self, key: (String, String), handler: HandlerFunc) {
+        let method = Method::from_str(&key.0);
         let path = key.1.to_string();
+
         self.routes.insert((method, path), handler);
     }
 

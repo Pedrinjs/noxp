@@ -42,7 +42,9 @@ pub struct RealServer {
 
 impl RealServer {
     pub fn handle_func(&mut self, key: (&str, &str), handler: HandlerFunc) {
-        self.router.handle(key, handler)
+        let method = key.0.to_string();
+        let path = key.1.to_string();
+        self.router.handle((method, path), handler)
     }
 
     pub fn listen_and_serve<A>(self, addr: A) -> Result<(), std::io::Error>

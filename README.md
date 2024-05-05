@@ -11,9 +11,9 @@ NOXP uses only the standard library
 - [x] More status codes
 - [x] More http methods
 - [x] Headers!
-- [ ] Use query strings
+- [x] Use query strings
 - [ ] Add middleware
-- [ ] Authentication
+- [x] Authentication (do it by yourself!)
 - [ ] Publish to crates.io
 - [ ] Add documentation
 

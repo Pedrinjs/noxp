@@ -1,12 +1,7 @@
 use std::fmt;
 use std::net::TcpStream;
 
-use noxp::http::{
-    response::ResponseWriter,
-    Request,
-    StatusCode,
-};
-use noxp::Server;
+use noxp::{ Server, http::{Response, Request, StatusCode} };
 
 struct Person {
     name: String,
@@ -31,28 +26,33 @@ fn main() -> std::io::Result<()> {
 }
 
 fn index(_req: Request, stream: TcpStream) {
-    ResponseWriter::default()
-        .set_status(StatusCode::OK)
+    Response::new(StatusCode::OK)
         .set_text("Hello, World!")
-        .build()
         .write(stream);
 }
 
 fn post(req: Request, stream: TcpStream) {
-    req.print_body();
+    match req.get_header("Authorization") {
+        Some(_) => {
+            req.print_body();
 
-    ResponseWriter::default()
-        .set_status(StatusCode::OK)
-        .set_json(req.body())
-        .build()
-        .write(stream);
+            Response::new(StatusCode::Created)
+                .set_json(req.get_body())
+                .write(stream);
+        },
+        None => {
+            Response::new(StatusCode::Unauthorized)
+                .header(
+                    "WWW-Authenticate",
+                    r#"Basic realm="User Visible Realm", charset="UTF-8""#
+                ).set_text("you need authorization!").write(stream);
+        }
+    };
 }
 
 fn file(_req: Request, stream: TcpStream) {
-    ResponseWriter::default()
-        .set_status(StatusCode::OK)
+    Response::new(StatusCode::OK)
         .set_html("hello.html")
-        .build()
         .write(stream);
 }
 
@@ -62,9 +62,7 @@ fn json(_req: Request, stream: TcpStream) {
         age: 15,
     };
 
-    ResponseWriter::default()
-        .set_status(StatusCode::OK)
+    Response::new(StatusCode::OK)
         .set_json(person)
-        .build()
         .write(stream);
 }

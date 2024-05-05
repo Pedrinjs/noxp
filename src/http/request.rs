@@ -1,10 +1,12 @@
 use std::collections::BTreeMap;
 
 use super::method::Method;
+use super::query_string::QueryString;
 
 #[derive(Clone)]
 pub struct Request {
     headers: BTreeMap<String, String>,
+    query_string: Option<QueryString>,
     method: Method,
     path: String,
     body: String,
@@ -16,15 +18,15 @@ impl Request {
         let mut buf_iter = buf.lines().enumerate().peekable();
         
         let (mut first, mut last) = (String::new(), String::new());
-        let mut headers: BTreeMap<String, String> = BTreeMap::new();
+        let mut headers = BTreeMap::new();
 
         while let Some((index, line)) = buf_iter.next() {
             if index == 0 {
-                first = line.to_string();
+                first = line.into();
                 continue;
             }
             if let None = buf_iter.peek() {
-                last = line.to_string();
+                last = line.into();
                 continue;
             }
             if let Some(&(_, "")) = buf_iter.peek() {
@@ -34,18 +36,25 @@ impl Request {
             let Some((k, v)) = line.split_once(": ") else {
                 continue
             };
-            headers.insert(k.into(), v.into());
+            headers.insert(k.to_string(), v.to_string());
         }
 
         let mut first_line = first.split(' ');
         let method = first_line.next().unwrap();
-        let path = first_line.next().unwrap();
+        let mut path = first_line.next().unwrap();
+
+        let mut query_string: Option<QueryString> = None;
+        if let Some(i) = path.find('?') {
+            query_string = Some(QueryString::from(&path[i + 1..]));
+            path = &path[..i];
+        }
 
         Self {
             headers,
+            query_string,
             method: Method::from_str(method),
             path: path.to_string(),
-            body: last.to_string(),
+            body: last,
         }
     }
 
@@ -57,14 +66,12 @@ impl Request {
         self.path.clone()
     }
 
-    pub fn body(&self) -> String {
+    pub fn get_body(&self) -> String {
         self.body.clone()
     }
 
-    pub fn headers(&self) {
-        for (key, value) in &self.headers {
-            println!("{key}: {value}");
-        }
+    pub fn get_header(&self, key: &str) -> Option<String> {
+        self.headers.get(key).cloned()
     }
 
     pub fn print_body(&self) {
