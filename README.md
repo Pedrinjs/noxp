@@ -7,7 +7,7 @@ NOXP uses only the standard library
 #### 🚧 What's next:
 - [x] Optional multithreading
 - [x] Use the requests for some usefull purpose
-- [x] "Better" routing system
+- [x] Better routing system
 - [x] More status codes
 - [x] More http methods
 - [x] Headers!
@@ -57,36 +57,28 @@ fn main() -> std::io::Result<()> {
   server.listen_and_serve(8080)
 }
 
-fn index(_req: Request, stream: TcpStream) {
-  ResponseWriter::default()
+fn index(_req: Request) -> Response {
+  Response::default()
     .set_status(StatusCode::OK)
     .set_text("Hello, World!")
-    .build()
-    .write(stream);
 }
 
-fn post(req: Request, _stream: TcpStream) {
+fn post(req: Request) -> Response {
   req.print_body();
+
+  Response::default().set_status(StatusCode::OK).set_json(req.get_body())
 }
 
-fn file(_req: Request, stream: TcpStream) {
-  ResponseWriter::default()
-    .set_status(StatusCode::OK)
-    .set_html("hello.html")
-    .build()
-    .write(stream);
+fn file(_req: Request) -> Response {
+  Response::default().set_status(StatusCode::OK).set_html("hello.html")
 }
 
-fn json(_req: Request, stream: TcpStream) {
+fn json(_req: Request) -> Response {
   let person = Person {
     name: String::from("Menezes"),
     age: 15,
   };
 
-  ResponseWriter::default()
-    .set_status(StatusCode::OK)
-    .set_json(person)
-    .build()
-    .write(stream);
+  Response::default().set_status(StatusCode::OK).set_json(person)
 }
 ```
