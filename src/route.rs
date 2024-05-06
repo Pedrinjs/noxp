@@ -2,9 +2,9 @@ use std::collections::BTreeMap;
 use std::io::prelude::*;
 use std::net::TcpStream;
 
-use super::http::{Method,Request};
+use super::http::{Method, Request, Response};
 
-pub type HandlerFunc = fn(Request, TcpStream);
+pub type HandlerFunc = fn(Request) -> Response;
 
 pub struct Router {
     routes: BTreeMap<(Method, String), HandlerFunc>,
@@ -34,7 +34,8 @@ impl Router {
 
         if self.routes.contains_key(&key) {
             let handler = self.routes.get(&key).unwrap();
-            handler(request, stream);
+            let response = handler(request);
+            response.write(stream);
         }
     }
 }

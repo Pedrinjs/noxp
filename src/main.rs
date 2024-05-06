@@ -1,5 +1,4 @@
 use std::fmt;
-use std::net::TcpStream;
 
 use noxp::{ Server, http::{Response, Request, StatusCode} };
 
@@ -25,46 +24,38 @@ fn main() -> std::io::Result<()> {
     server.listen_and_serve("127.0.0.1:8080")
 }
 
-fn index(req: Request, stream: TcpStream) {
+fn index(req: Request) -> Response {
     req.print_self();
 
-    Response::new(StatusCode::OK)
-        .set_text("Hello, World!")
-        .write(stream);
+    Response::new(StatusCode::OK).set_text("Hello, World!")
 }
 
-fn post(req: Request, stream: TcpStream) {
+fn post(req: Request) -> Response {
     match req.get_header("Authorization") {
         Some(_) => {
             req.print_body();
 
-            Response::new(StatusCode::Created)
-                .set_json(req.get_body())
-                .write(stream);
+            Response::new(StatusCode::Created).set_json(req.get_body())
         },
         None => {
             Response::new(StatusCode::Unauthorized)
                 .header(
                     "WWW-Authenticate",
                     r#"Basic realm="User Visible Realm", charset="UTF-8""#
-                ).set_text("you need authorization!").write(stream);
+                ).set_text("you need authorization!")
         }
-    };
+    }
 }
 
-fn file(_req: Request, stream: TcpStream) {
-    Response::new(StatusCode::OK)
-        .set_html("hello.html")
-        .write(stream);
+fn file(_req: Request) -> Response {
+    Response::new(StatusCode::OK).set_html("hello.html")
 }
 
-fn json(_req: Request, stream: TcpStream) {
+fn json(_req: Request) -> Response {
     let person = Person {
         name: String::from("Menezes"),
         age: 15,
     };
 
-    Response::new(StatusCode::OK)
-        .set_json(person)
-        .write(stream);
+    Response::new(StatusCode::OK).set_json(person)
 }

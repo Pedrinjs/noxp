@@ -54,7 +54,10 @@ impl Response {
     }
     
     pub fn write(&self, mut stream: TcpStream) {
-        let mut response = format!("HTTP/1.1 {}\r\n", self.status.get_status());
+        let mut response = format!(
+            "HTTP/1.1 {}\r\n",
+            self.status.get_status()
+        );
 
         for (key, value) in &self.headers {
             let kv = format!("{key}: {value}\r\n");

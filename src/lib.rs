@@ -33,7 +33,7 @@ impl Server {
         self.router.handle((method, path), handler)
     }
 
-    pub fn listen_and_serve<A>(self, addr: A) -> Result<(), std::io::Error>
+    pub fn listen_and_serve<A>(self, addr: A) -> std::io::Result<()>
         where A: ToSocketAddrs
     {
         let listener = TcpListener::bind(addr)?;
