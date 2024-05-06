@@ -26,21 +26,7 @@ impl Server {
         self.pool = Some(pool);
         self
     }
-
-    pub fn build(self) -> RealServer {
-        RealServer {
-            router: self.router,
-            pool: self.pool,
-        }
-    }
-}
-
-pub struct RealServer {
-    router: Router,
-    pool: Option<ThreadPool>,
-}
-
-impl RealServer {
+    
     pub fn handle_func(&mut self, key: (&str, &str), handler: HandlerFunc) {
         let method = key.0.to_string();
         let path = key.1.to_string();

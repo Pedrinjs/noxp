@@ -15,7 +15,7 @@ impl fmt::Display for Person {
 }
 
 fn main() -> std::io::Result<()> {
-    let mut server = Server::default().set_pool(4).build();
+    let mut server = Server::default().set_pool(4);
 
     server.handle_func(("GET", "/"), index);
     server.handle_func(("POST", "/"), post);
@@ -25,7 +25,9 @@ fn main() -> std::io::Result<()> {
     server.listen_and_serve("127.0.0.1:8080")
 }
 
-fn index(_req: Request, stream: TcpStream) {
+fn index(req: Request, stream: TcpStream) {
+    req.print_self();
+
     Response::new(StatusCode::OK)
         .set_text("Hello, World!")
         .write(stream);

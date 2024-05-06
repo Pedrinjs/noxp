@@ -23,11 +23,7 @@ use std::fmt;
 use std::net::TcpStream;
 
 use noxp::Server;
-use noxp::http::{
-  response::ResponseWriter,
-  Request,
-  StatusCode,
-};
+use noxp::http::{ Response, Request, StatusCode };
 
 struct Person {
   name: String,
@@ -44,8 +40,8 @@ fn main() -> std::io::Result<()> {
   // define the size of the thread pool
   let size: usize = 4;
   // create the server with a thread pool of defined size 4 (it's optional)
-  // it's also possible to use Server::default().set_pool(4).build()
-  let mut server = Server::default().set_pool(size).build();
+  // it's also possible to use Server::default().set_pool(4)
+  let mut server = Server::default().set_pool(size);
 
   // pay attention for the tuple (Method, &str)
   server.handle_func(("GET", "/"), index);
@@ -69,7 +65,7 @@ fn index(_req: Request, stream: TcpStream) {
     .write(stream);
 }
 
-fn post(req: Request, stream: TcpStream) {
+fn post(req: Request, _stream: TcpStream) {
   req.print_body();
 }
 

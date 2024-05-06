@@ -77,4 +77,18 @@ impl Request {
     pub fn print_body(&self) {
         println!("{}", self.body);
     }
+
+    pub fn print_self(&self) {
+        println!("{} {} HTTP/1.1", self.method.to_str(), self.path);
+
+        for (key, value) in &self.headers {
+            println!("{key}: {value}");
+        }
+
+        if let Some(qs) = &self.query_string {
+            println!("{:?}", qs);
+        }
+
+        println!("{}", self.body);
+    }
 }
