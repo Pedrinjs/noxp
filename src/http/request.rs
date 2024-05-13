@@ -1,4 +1,5 @@
 use std::collections::BTreeMap;
+use std::net::SocketAddr;
 
 use super::method::Method;
 use super::query_string::QueryString;
@@ -7,13 +8,14 @@ use super::query_string::QueryString;
 pub struct Request {
     headers: BTreeMap<String, String>,
     query_string: Option<QueryString>,
+    remote_addr: SocketAddr,
     method: Method,
     path: String,
     body: String,
 }
 
 impl Request {
-    pub fn from<'a>(buffer: &'a [u8]) -> Self {
+    pub fn from<'a>(buffer: &'a [u8], addr: SocketAddr) -> Self {
         let buf = String::from_utf8_lossy(buffer);
         let mut buf_iter = buf.lines().enumerate().peekable();
         
@@ -52,6 +54,7 @@ impl Request {
         Self {
             headers,
             query_string,
+            remote_addr: addr,
             method: Method::from_str(method),
             path: path.to_string(),
             body: last,
@@ -66,7 +69,11 @@ impl Request {
         self.path.clone()
     }
 
-    pub fn get_body(&self) -> String {
+    pub fn remote(&self) -> SocketAddr {
+        self.remote_addr.clone()
+    }
+
+    pub fn body(&self) -> String {
         self.body.clone()
     }
 

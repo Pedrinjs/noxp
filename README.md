@@ -20,7 +20,6 @@ NOXP uses only the standard library
 #### Usage
 ```rust
 use std::fmt;
-use std::net::TcpStream;
 
 use noxp::Server;
 use noxp::http::{ Response, Request, StatusCode };
@@ -57,28 +56,27 @@ fn main() -> std::io::Result<()> {
   server.listen_and_serve(8080)
 }
 
-fn index(_req: Request) -> Response {
-  Response::default()
-    .set_status(StatusCode::OK)
+fn index(_req: Request, res: Response) -> Response {
+  res.set_status(StatusCode::OK)
     .set_text("Hello, World!")
 }
 
-fn post(req: Request) -> Response {
+fn post(req: Request, res: Response) -> Response {
   req.print_body();
 
-  Response::default().set_status(StatusCode::OK).set_json(req.get_body())
+  res.set_status(StatusCode::OK).set_json(req.get_body())
 }
 
-fn file(_req: Request) -> Response {
-  Response::default().set_status(StatusCode::OK).set_html("hello.html")
+fn file(_req: Request, res: Response) -> Response {
+  res.set_status(StatusCode::OK).set_html("hello.html")
 }
 
-fn json(_req: Request) -> Response {
+fn json(_req: Request, res: Response) -> Response {
   let person = Person {
     name: String::from("Menezes"),
     age: 15,
   };
 
-  Response::default().set_status(StatusCode::OK).set_json(person)
+  res.set_status(StatusCode::OK).set_json(person)
 }
 ```

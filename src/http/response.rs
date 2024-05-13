@@ -8,18 +8,23 @@ use super::status_code::StatusCode;
 
 #[derive(Clone)]
 pub struct Response {
-    status: StatusCode,
+    status: Option<StatusCode>,
     headers: BTreeMap<String, String>,
     body: String,
 }
 
 impl Response {
-    pub fn new(status: StatusCode) -> Self {
+    pub fn new() -> Self {
         Self {
-            status,
+            status: None,
             headers: BTreeMap::new(),
             body: String::new(),
         }
+    }
+
+    pub fn set_status(mut self, status: StatusCode) -> Self {
+        self.status = Some(status);
+        self
     }
 
     pub fn header(mut self, name: &str, value: &str) -> Self {
@@ -56,7 +61,7 @@ impl Response {
     pub fn write(&self, mut stream: TcpStream) {
         let mut response = format!(
             "HTTP/1.1 {}\r\n",
-            self.status.get_status()
+            self.status.as_ref().unwrap().get_status()
         );
 
         for (key, value) in &self.headers {
