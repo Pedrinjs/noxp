@@ -1,5 +1,6 @@
 use std::fs;
 use std::collections::BTreeMap;
+use std::collections::btree_map::Entry;
 use std::fmt::Display;
 use std::io::Write;
 use std::net::TcpStream;
@@ -29,6 +30,14 @@ impl Response {
 
     pub fn header(mut self, name: &str, value: &str) -> Self {
         self.headers.insert(name.into(), value.into());
+        self
+    }
+
+    pub fn remove_header(mut self, name: &str) -> Self {
+        if let Entry::Occupied(o) = self.headers.entry(name.to_string()) {
+            o.remove_entry();
+        }
+
         self
     }
 

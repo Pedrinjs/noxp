@@ -2,7 +2,9 @@ use std::fmt;
 
 use noxp::{
     Server,
-    http::{Response, Request, StatusCode} };
+    http::{Response, Request, StatusCode},
+    middlewares::{helmet, logger},
+};
 
 struct Person {
     name: String,
@@ -18,12 +20,8 @@ impl fmt::Display for Person {
 fn main() -> std::io::Result<()> {
     let mut server = Server::default();
 
-    server.r#use(|_: Request, res: Response| -> Response {
-       res.header("Content-Security-Policy", r#"default-src 'self';base-uri 'self'"#)
-           .header("Cross-Origin-Embedder-Policy", "require-corp")
-           .header("Cross-Origin-Opener-Policy", "same-origin")
-           .header("Cross-Origin-Resource-Policy", "same-origin")
-    });
+    server.r#use(logger);
+    server.r#use(helmet);
 
     server.handle_func(("GET", "/"), index);
     server.handle_func(("POST", "/"), post);

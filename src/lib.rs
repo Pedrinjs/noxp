@@ -1,6 +1,7 @@
 pub mod http;
 pub mod thread;
 pub mod route;
+pub mod middlewares;
 
 use crate::thread::ThreadPool;
 use crate::route::{HandlerFunc, Middleware, Router};
