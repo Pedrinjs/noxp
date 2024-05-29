@@ -12,7 +12,7 @@ NOXP uses only the standard library
 - [x] More http methods
 - [x] Headers!
 - [x] Use query strings
-- [ ] Add middleware
+- [x] Add middleware
 - [x] Authentication (do it by yourself!)
 - [ ] Publish to crates.io
 - [ ] Add documentation
