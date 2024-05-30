@@ -14,8 +14,8 @@ NOXP uses only the standard library
 - [x] Use query strings
 - [x] Add middleware
 - [x] Authentication (do it by yourself!)
-- [ ] Publish to crates.io
-- [ ] Add documentation
+- [x] Add documentation
+- [x] Publish to crates.io
 
 #### Usage
 ```rust

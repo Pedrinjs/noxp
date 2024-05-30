@@ -1,3 +1,4 @@
+/// The status code type
 #[derive(Clone)]
 pub enum StatusCode {
     // Information Responses
@@ -63,6 +64,7 @@ pub enum StatusCode {
 
 // just kill me
 impl StatusCode {
+    /// Return a string from the current statuscode
     pub fn get_status(&self) -> &'static str {
         match self {
             StatusCode::Continue            => "100 Continue",
@@ -122,5 +124,3 @@ impl StatusCode {
         }
     }
 }
-
-// that took waaaaaay longer than I thought

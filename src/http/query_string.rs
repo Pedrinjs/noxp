@@ -1,10 +1,12 @@
 use std::collections::BTreeMap;
 
+/// The query string struct for composing and receiving query string values
 #[derive(Clone, Debug)]
 pub struct QueryString {
     data: BTreeMap<String, Value>,
 }
 
+/// The value type for the query string
 #[derive(Clone, Debug)]
 pub enum Value {
     Single(String),
@@ -12,6 +14,7 @@ pub enum Value {
 }
 
 impl QueryString {
+    /// get query string value from a key
     pub fn get(&self, key: String) -> Option<&Value> {
         self.data.get(&key)
     }

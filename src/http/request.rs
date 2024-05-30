@@ -4,6 +4,7 @@ use std::net::SocketAddr;
 use super::method::Method;
 use super::query_string::QueryString;
 
+/// The struct that handles the HTTP requests
 #[derive(Clone)]
 pub struct Request {
     headers: BTreeMap<String, String>,
@@ -15,6 +16,7 @@ pub struct Request {
 }
 
 impl Request {
+    /// Create a new Request from a buffer string
     pub fn from<'a>(buffer: &'a [u8], addr: SocketAddr) -> Self {
         let buf = String::from_utf8_lossy(buffer);
         let mut buf_iter = buf.lines().enumerate().peekable();
@@ -61,30 +63,37 @@ impl Request {
         }
     }
 
+    /// Returns the HTTP method as a Method struct
     pub fn method(&self) -> Method {
         self.method.clone()
     }
 
+    /// Returns the request path
     pub fn path(&self) -> String {
         self.path.clone()
     }
 
+    /// Returns the socket address of the request
     pub fn remote(&self) -> SocketAddr {
         self.remote_addr.clone()
     }
 
+    /// Returns the body of the request
     pub fn body(&self) -> String {
         self.body.clone()
     }
 
+    /// Get the header's value from the key
     pub fn get_header(&self, key: &str) -> Option<String> {
         self.headers.get(key).cloned()
     }
 
+    /// Prints the request body
     pub fn print_body(&self) {
         println!("{}", self.body);
     }
 
+    /// Self explanatory
     pub fn print_self(&self) {
         println!("{} {} HTTP/1.1", self.method.to_str(), self.path);
 

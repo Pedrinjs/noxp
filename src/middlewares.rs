@@ -1,5 +1,6 @@
 use super::http::{Request, Response};
 
+/// Logger middleware
 pub fn logger(req: Request, res: Response) -> Response {
     println!(
         "LOG {} - HTTP/1.1 {} {}",
@@ -11,6 +12,7 @@ pub fn logger(req: Request, res: Response) -> Response {
     res
 }
 
+/// Middleware to add some protection to XSS attack
 pub fn helmet(_: Request, res: Response) -> Response {
     res.header(
         "Content-Security-Policy",
@@ -40,6 +42,7 @@ pub fn helmet(_: Request, res: Response) -> Response {
         .remove_header("Powered-By")
 }
 
+/// Cross-Origin Resource Sharing (CORS) middleware
 pub fn cors(_: Request, res: Response) -> Response {
     res.header("Access-Control-Allow-Origin", "*")
         .header("Access-Control-Allow-Methods",
