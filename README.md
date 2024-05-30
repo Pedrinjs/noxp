@@ -1,6 +1,5 @@
 # NOXP
 ***
-![Badge em Desenvolvimento](http://img.shields.io/static/v1?label=STATUS&message=EM%20DESENVOLVIMENTO&color=GREEN&style=for-the-badge)
 ### 🦀 NOXP is a simple web framework for rust inspired by golang's net/http package
 NOXP uses only the standard library
 
