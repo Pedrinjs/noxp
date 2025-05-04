@@ -26,55 +26,48 @@ impl Response {
     }
 
     /// Set the response status
-    pub fn set_status(mut self, status: StatusCode) -> Self {
+    pub fn set_status(&mut self, status: StatusCode) {
         self.status = Some(status);
-        self
     }
 
     /// Add another header to the response
-    pub fn header(mut self, name: &str, value: &str) -> Self {
+    pub fn header(&mut self, name: &str, value: &str) {
         self.headers.insert(name.into(), value.into());
-        self
     }
 
     /// Remove a header from the response
-    pub fn remove_header(mut self, name: &str) -> Self {
+    pub fn remove_header(&mut self, name: &str) {
         if let Entry::Occupied(o) = self.headers.entry(name.to_string()) {
             o.remove_entry();
         }
-
-        self
     }
 
     /// Set a text/plain response with a text
-    pub fn set_text(mut self, body: &str) -> Self {
+    pub fn set_text(&mut self, body: &str) {
         self.body = body.into();
         self.headers.insert("Content-Length".into(), body.len().to_string());
         self.headers.insert("Content-Type".into(), "text/plain".into());
-        self
     }
 
     /// Set a text/html body with the file path.
     /// Files should be located at `views/`
-    pub fn set_html(mut self, path: &str) -> Self {
+    pub fn set_html(&mut self, path: &str) {
         let path = format!("views/{}", path);
         let body = fs::read_to_string(path).unwrap();
 
         self.body = body.clone().into();
         self.headers.insert("Content-Length".into(), body.len().to_string());
         self.headers.insert("Content-Type".into(), "text/html".into());
-        self
     }
 
     /// Set a application/json body with the struct.
     /// The struct should implement the `Display` trait
-    pub fn set_json(mut self, body: impl Display) -> Self {
+    pub fn set_json(&mut self, body: impl Display) {
         let body = format!("{body}");
 
         self.body = body.clone().into();
         self.headers.insert("Content-Length".into(), body.len().to_string());
         self.headers.insert("Content-Type".into(), "application/json".into());
-        self
     }
     
     /// Write the response to the user with a `TcpStream`

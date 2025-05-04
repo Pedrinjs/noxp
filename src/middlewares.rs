@@ -1,18 +1,17 @@
 use super::http::{Request, Response};
+use super::route::HandlerFunc;
 
 /// Logger middleware
-pub fn logger(req: Request, res: Response) -> Response {
-    println!(
-        "LOG {} - HTTP/1.1 {} {}",
-        req.remote(),
-        req.method().to_str(),
-        req.path(),
-    );
+pub fn logger(next: HandlerFunc) -> HandlerFunc {
+    Box::new(move |req: Request, res: &mut Response| {
+        println!("LOG {} - HTTP/1.1 {} {}",
+            req.remote(), req.method().to_str(), req.path());
 
-    res
+        next(req, res);
+    })
 }
 
-/// Middleware to add some protection to XSS attack
+/*/// Middleware to add some protection to XSS attack
 pub fn helmet(_: Request, res: Response) -> Response {
     res.header(
         "Content-Security-Policy",
@@ -48,4 +47,4 @@ pub fn cors(_: Request, res: Response) -> Response {
         .header("Access-Control-Allow-Methods",
             "GET, POST, PUT, DELETE, HEAD, CONNECT, OPTIONS, TRACE, PATCH")
         .header("", "")
-}
+}*/
