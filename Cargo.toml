@@ -3,7 +3,9 @@ name = "noxp"
 version = "0.2.0"
 edition = "2021"
 description = "A simple web server framework"
+repository = "https://github.com/Pedrinjs/noxp"
 license = "MIT OR Apache-2.0"
+readme = "README.md"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
