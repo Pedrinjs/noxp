@@ -12,17 +12,18 @@ NOXP uses only the standard library
 - [x] Query strings support
 - [ ] Dynamic routing
 - [x] Add middleware
-- [ ] Fix middleware
+- [x] Fix middleware
 - [ ] Authentication middleware
 - [x] Add documentation
 - [x] Publish to crates.io
 
 #### Usage
 ```rust
-use std::fmt;
-
 use noxp::Server;
 use noxp::http::{ Response, Request, StatusCode };
+
+use std::fmt;
+use std::sync::Arc;
 
 struct Person {
   name: String,
@@ -40,37 +41,37 @@ fn main() -> std::io::Result<()> {
   let mut server = Server::new();
 
   // pay attention for the tuple (Method, &str)
-  server.handle_func(("GET", "/"), Box::new(index));
-  server.handle_func(("POST", "/"), Box::new(post));
+  server.handle_func(("GET", "/"), Arc::new(index));
+  server.handle_func(("POST", "/"), Arc::new(post));
 
   // you can also send html (only in the views folder)
-  server.handle_func(("GET", "/hello"), Box::new(file));
+  server.handle_func(("GET", "/hello"), Arc::new(file));
 
   // and send json (only structs which implement Display)
-  server.handle_func(("GET", "/person"), Box::new(json));
+  server.handle_func(("GET", "/person"), Arc::new(json));
 
   // listening at localhost:8080
   server.listen_and_serve("localhost:8080")
 }
 
-fn index(_req: Request, res: Response) {
+fn index(_req: Request, res: &mut Response) {
   res.set_status(StatusCode::OK);
   res.set_text("Hello, World!");
 }
 
-fn post(req: Request, res: Response) {
+fn post(req: Request, res: &mut Response) {
   req.print_body();
 
   res.set_status(StatusCode::OK);
   res.set_json(req.get_body());
 }
 
-fn file(_req: Request, res: Response) {
+fn file(_req: Request, res: &mut Response) {
   res.set_status(StatusCode::OK);
   res.set_html("hello.html");
 }
 
-fn json(_req: Request, res: Response) {
+fn json(_req: Request, res: &mut Response) {
   let person = Person {
     name: String::from("Menezes"),
     age: 16,
