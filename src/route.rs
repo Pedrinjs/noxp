@@ -3,10 +3,10 @@ use std::io::prelude::*;
 use std::net::{SocketAddr, TcpStream};
 use std::sync::Arc;
 
-use super::http::{Method, Request, Response, StatusCode};
+use super::http::{Method, Request, Response, ResponseWriter, StatusCode};
 
 /// Handler Function type
-pub type HandlerFunc = Arc<dyn for<'a> Fn(Request, &'a mut Response)>;
+pub type HandlerFunc = Arc<dyn for<'a> Fn(&'a mut ResponseWriter, Request)>;
 
 /// Middleware type (same as the handler)
 pub type Middleware = fn(HandlerFunc) -> HandlerFunc;
@@ -49,7 +49,7 @@ impl Router {
         let mut buffer = [0; 1024];
         stream.read(&mut buffer).unwrap();
 
-        let mut response = Response::new();
+        let mut response_writer = Response::builder();
         let request = Request::from(&buffer, addr);
         let key = (request.method(), request.path());
 
@@ -62,15 +62,21 @@ impl Router {
                     .fold(handler_func, |acc: HandlerFunc, middleware: &Middleware| {
                         middleware(acc)
                     });
-                resulting(request, &mut response);
+
+                resulting(&mut response_writer, request);
+                let response = response_writer.build();
                 response.write(stream);
                 return;
             }
-            handler(request, &mut response);
+
+            handler(&mut response_writer, request);
+            let response = response_writer.build();
             response.write(stream);
             return;
         }
-        response.set_status(StatusCode::NotFound);
+
+        response_writer.set_status(StatusCode::NotFound);
+        let response = response_writer.build();
         response.write(stream);
     }
 }

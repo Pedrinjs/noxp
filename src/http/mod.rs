@@ -1,6 +1,6 @@
 pub use method::Method;
 pub use request::Request;
-pub use response::Response;
+pub use response::{Response, ResponseWriter};
 pub use status_code::StatusCode;
 pub use query_string::QueryString;
 

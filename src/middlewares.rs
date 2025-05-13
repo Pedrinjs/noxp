@@ -1,21 +1,21 @@
-use super::http::{Request, Response};
+use super::http::{Request, ResponseWriter};
 use super::route::HandlerFunc;
 
 use std::sync::Arc;
 
 /// Logger middleware
 pub fn logger(next: HandlerFunc) -> HandlerFunc {
-    Arc::new(move |req: Request, res: &mut Response| {
+    Arc::new(move |res: &mut ResponseWriter, req: Request| {
         println!("LOG {} - HTTP/1.1 {} {}",
             req.remote(), req.method().to_str(), req.path());
 
-        next(req, res);
+        next(res, req);
     })
 }
 
 /// Middleware to add some protection to XSS attack
 pub fn helmet(next: HandlerFunc) -> HandlerFunc {
-    Arc::new(move |req: Request, res: &mut Response| {
+    Arc::new(move |res: &mut ResponseWriter, req: Request| {
         res.header(
             "Content-Security-Policy",
             "default-src 'self';
@@ -43,7 +43,7 @@ pub fn helmet(next: HandlerFunc) -> HandlerFunc {
         res.header("X-XSS-Protection", "0");
         res.remove_header("Powered-By");
 
-        next(req, res)
+        next(res, req)
     })
 }
 

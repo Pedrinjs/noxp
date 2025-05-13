@@ -62,6 +62,12 @@ pub enum StatusCode {
     NetworkAuthenticationRequired,
 }
 
+impl Default for StatusCode {
+    fn default() -> Self {
+        StatusCode::OK
+    }
+}
+
 // just kill me
 impl StatusCode {
     /// Return a string from the current statuscode

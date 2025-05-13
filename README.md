@@ -19,8 +19,7 @@ NOXP uses only the standard library
 
 #### Usage
 ```rust
-use noxp::Server;
-use noxp::http::{ Response, Request, StatusCode };
+use noxp::*;
 
 use std::fmt;
 use std::sync::Arc;
@@ -54,30 +53,30 @@ fn main() -> std::io::Result<()> {
   server.listen_and_serve("localhost:8080")
 }
 
-fn index(_req: Request, res: &mut Response) {
-  res.set_status(StatusCode::OK);
-  res.set_text("Hello, World!");
+fn index(res: &mut ResponseWriter, _req: Request) {
+  res.set_status(StatusCode::OK)
+      .set_text("Hello, World!");
 }
 
-fn post(req: Request, res: &mut Response) {
+fn post(res: &mut ResponseWriter, req: Request) {
   req.print_body();
 
-  res.set_status(StatusCode::OK);
-  res.set_json(req.get_body());
+  res.set_status(StatusCode::OK)
+      .set_json(req.body());
 }
 
-fn file(_req: Request, res: &mut Response) {
-  res.set_status(StatusCode::OK);
-  res.set_html("hello.html");
+fn file(res: &mut ResponseWriter, _req: Request) {
+  res.set_status(StatusCode::OK)
+      .set_html("hello.html");
 }
 
-fn json(_req: Request, res: &mut Response) {
+fn json(res: &mut Response, _req: Request) {
   let person = Person {
     name: String::from("Menezes"),
     age: 16,
   };
 
-  res.set_status(StatusCode::OK);
-  res.set_json(person);
+  res.set_status(StatusCode::OK)
+      .set_json(person);
 }
 ```
